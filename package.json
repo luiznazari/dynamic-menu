@@ -1,0 +1,33 @@
+{
+  "name": "menu-infinito",
+  "version": "1.0.0",
+  "description": "Back-End API for creating an infinite menu",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "env NODE_ENV=development mocha \"test/**/*.test.js\"",
+    "test:nyc": "env NODE_ENV=development nyc --reporter=html mocha \"test/**/*.test.js\"",
+    "start": "nodemon -r dotenv/config server/server.js dotenv_config_path=./server/.env",
+    "start:dev": "npm run start",
+    "lint": "eslint ./src/**/*.js --fix && eslint ./test/**/*.js --fix"
+  },
+  "author": "Luiz Felipe Nazari",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "joi": "^17.4.2",
+    "mongoose": "^6.0.12"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1017.0",
+    "babel-eslint": "^10.1.0",
+    "chai": "^4.3.4",
+    "dotenv": "^10.0.0",
+    "eslint": "^8.1.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "mocha": "^9.1.3",
+    "nodemon": "^2.0.14",
+    "nyc": "^15.1.0",
+    "sinon": "^11.1.2"
+  }
+}

@@ -1,0 +1,19 @@
+# Created by https://www.gitignore.io/api/node,sublimetext
+
+# VSCode
+.vscode/*
+!.vscode/launch.json
+
+# Node
+/.env
+.nyc_output
+coverage
+
+# NPM
+node_modules
+.npm
+
+# Logs
+logs
+*.log
+npm-debug.log*
