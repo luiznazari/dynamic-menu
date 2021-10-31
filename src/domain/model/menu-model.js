@@ -9,7 +9,7 @@ const menuSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  realatedId: {
+  relatedId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Menu'
   }

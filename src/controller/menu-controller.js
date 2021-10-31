@@ -4,13 +4,16 @@ const ResponseUtils = require('../utils/response-utils');
 const { RequestValidator, Validators } = require('../utils/request-validator');
 const { SchemaValidator } = require('../utils/schema-validator');
 const { MenuSchema, menuJoiSchema } = require('../domain/schema/menu');
+const MenuStructureService = require('../service/menu-structure-service');
 
 class MenuController {
   #menuService = new MenuService();
+  #menuStructureService = new MenuStructureService();
 
   async list(req, res) {
     try {
-      const response = await this.#menuService.list();
+      const menus = await this.#menuService.list();
+      const response = menus.map(MenuSchema.fromModel);
       return ResponseUtils.ok(res, response);
 
     } catch (error) {
@@ -95,11 +98,11 @@ class MenuController {
 
   async getMenu(req, res) {
     try {
-      const response = 'TODO'; // TODO
+      const response = await this.#menuStructureService.getMenuTree();
       return ResponseUtils.ok(res, response);
 
     } catch (error) {
-      new LogEvent(LOG_LEVEL.ERROR, error.message).log();
+      LogEvent.error(error).log();
       return ResponseUtils.error(res, error);
     }
   }

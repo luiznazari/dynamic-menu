@@ -29,3 +29,22 @@
        - submenus (Array)
          - id
          - name
+
+
+
+---------
+
+id 1
+pid -
+
+id 2
+pid 1 -> 5 -> error
+
+id 3
+pid -
+
+id 4
+pid 2
+
+id 5
+pid 4
