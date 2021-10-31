@@ -1,14 +1,13 @@
-const DataResponseSchema = require('../domain/schema/response/data-response');
 const ErrorResponseSchema = require('../domain/schema/response/error-response');
-const HTTP_STATUS = require('../enum/http-status');
+const HTTP_STATUS = require('../domain/enum/http-status');
 
 const ResponseUtils = {
   ok: (res, data) => {
-    return res.status(HTTP_STATUS.OK).json(new DataResponseSchema(data));
+    return res.status(HTTP_STATUS.OK).json(data);
   },
 
   created: (res, data) => {
-    return res.status(HTTP_STATUS.CREATED).json(new DataResponseSchema(data));
+    return res.status(HTTP_STATUS.CREATED).json(data);
   },
 
   noContent: (res) => {

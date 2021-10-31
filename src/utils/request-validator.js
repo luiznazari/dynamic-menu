@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ParameterValidationError = require('../exception/parameter-validation-exception');
+const ParameterValidationError = require('../exception/parameter-validation-error');
 const LogEvent = require('./log-event');
 
 const Validators = {

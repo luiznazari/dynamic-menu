@@ -1,7 +1,17 @@
 const Joi = require('joi');
-const SchemaValidatiorException = require('../configuration/exception/validation/schema-validation-exception');
+const mongoose = require('mongoose');
+const SchemaValidatiorError = require('../exception/schema-validation-error');
 
 const DEFAULT_JOI_OPTIONS = { locale: 'en' };
+
+const Validators = {
+  validObjectId: (value, helper, fieldName) => {
+    if (typeof value !== 'string' || !mongoose.Types.ObjectId.isValid(value)) {
+      return helper.message(`"${fieldName}" is not a valid ObjectId.`);
+    }
+    return true;
+  }
+};
 
 class SchemaValidator {
   constructor(schema) {
@@ -9,14 +19,14 @@ class SchemaValidator {
   }
 
   validate(requestBody) {
-    Joi.validate(requestBody, this.schema, DEFAULT_JOI_OPTIONS, (err /*, value */) => {
-      if (err) {
-        throw new SchemaValidatiorException(err.details);
-      }
-    });
-
-    return requestBody;
+    const validationResult = this.schema.validate(requestBody, DEFAULT_JOI_OPTIONS);
+    if (validationResult.error) {
+      throw new SchemaValidatiorError(validationResult.error);
+    }
   }
 }
 
-module.exports = SchemaValidator;
+module.exports = {
+  Validators,
+  SchemaValidator,
+};

@@ -1,4 +1,4 @@
-const LOG_LEVEL = require('../enum/log-level');
+const LOG_LEVEL = require('../domain/enum/log-level');
 const LogObjectSchema = require('../domain/schema/log-object');
 const environmentProvider = require('../config/environment-provider');
 

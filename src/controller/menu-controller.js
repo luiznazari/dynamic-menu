@@ -2,35 +2,102 @@ const LogEvent = require('../utils/log-event');
 const MenuService = require('../service/menu-service');
 const ResponseUtils = require('../utils/response-utils');
 const { RequestValidator, Validators } = require('../utils/request-validator');
+const { SchemaValidator } = require('../utils/schema-validator');
+const { MenuSchema, menuJoiSchema } = require('../domain/schema/menu');
 
 class MenuController {
   #menuService = new MenuService();
 
-  async getById(req, res) {
+  async list(req, res) {
     try {
-      RequestValidator.validateParameters(req, [['id', Validators.validObjectId]]);
-      const id = req.params.id;
-      const response = await this.#menuService.getById(id);
+      const response = await this.#menuService.list();
       return ResponseUtils.ok(res, response);
+
     } catch (error) {
-      LogEvent.error(error).log();
+      new LogEvent(LOG_LEVEL.ERROR, error.message).log();
       return ResponseUtils.error(res, error);
     }
   }
 
   async create(req, res) {
     try {
-      // const { body } = req;
-      // const schemaValidator = new SchemaValidator(menuJoiSchema);
-      // schemaValidator.validate(body);
+      const { body } = req;
+      const schemaValidator = new SchemaValidator(menuJoiSchema);
+      schemaValidator.validate(body);
 
-      // const menuSchema = new MenuSchema();
-      // menuSchema.buildWithReqBody(body);
+      const menuSchema = MenuSchema.fromBody(body);
+      const menu = await this.#menuService.create(menuSchema);
+      const response = { id: menu.id };
+      return ResponseUtils.created(res, response);
 
-      // const response = await this.#menuBusiness.create(menuSchema, session);
+    } catch (error) {
+      LogEvent.error(error).log();
+      return ResponseUtils.error(res, error);
+    }
+  }
 
-      const response = 'response';
+  async getById(req, res) {
+    try {
+      RequestValidator.validateParameters(req, [['id', Validators.validObjectId]]);
+      const id = req.params.id;
+      const menu = await this.#menuService.getById(id);
+      
+      if (menu) {
+        const response = MenuSchema.fromModel(menu);
+        return ResponseUtils.ok(res, response);
+      }
+      return ResponseUtils.noContent(res);
+
+    } catch (error) {
+      LogEvent.error(error).log();
+      return ResponseUtils.error(res, error);
+    }
+  }
+
+  async update(req, res) {
+    try {
+      RequestValidator.validateParameters(req, [['id', Validators.validObjectId]]);
+      const id = req.params.id;
+
+      const { body } = req;
+      const schemaValidator = new SchemaValidator(menuJoiSchema);
+      schemaValidator.validate(body);
+
+      const menuSchema = MenuSchema.fromBody(body);
+      menuSchema.id = id;
+
+      await this.#menuService.update(menuSchema);
+      const response = { id };
       return ResponseUtils.ok(res, response);
+
+    } catch (error) {
+      LogEvent.error(error).log();
+      return ResponseUtils.error(res, error);
+    }
+  }
+
+  async deleteById(req, res) {
+    try {
+      RequestValidator.validateParameters(req, [['id', Validators.validObjectId]]);
+      const id = req.params.id;
+      const deleted = await this.#menuService.deleteById(id);
+
+      if (deleted) {
+        return ResponseUtils.ok(res, { id });
+      }
+      return ResponseUtils.noContent(res);
+
+    } catch (error) {
+      LogEvent.error(error).log();
+      return ResponseUtils.error(res, error);
+    }
+  }
+
+  async getMenu(req, res) {
+    try {
+      const response = 'TODO'; // TODO
+      return ResponseUtils.ok(res, response);
+
     } catch (error) {
       new LogEvent(LOG_LEVEL.ERROR, error.message).log();
       return ResponseUtils.error(res, error);

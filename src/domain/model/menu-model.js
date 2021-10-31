@@ -9,10 +9,10 @@ const menuSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  submenus: [{
+  realatedId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Menu'
-  }]
+  }
 });
 
 const Menu = mongoose.model('Menu', menuSchema);
