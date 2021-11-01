@@ -1,7 +1,6 @@
 
 ## Pontos gerais
 - Menu com aninhamento infinito
-- Estrutura pensando em carregamento por partes (como se fosse expandido)
 - API para cadastro por item
 
 ## Tecnologias

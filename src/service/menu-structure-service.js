@@ -1,13 +1,14 @@
-const Menu = require('../domain/model/menu-model');
 const MenuTreeItem = require('../domain/schema/menu-tree-item');
+const MenuRepository = require('../repository/menu-repository');
 const { isSameObjectId } = require('../utils/mongoose-utils');
 
 class MenuStructureService {
+  #menuRepository = new MenuRepository();
 
   async getMenuTree() {
-    const allMenus = await this.#getAllMenus();
+    const allMenus = await this.#menuRepository.findAll();
     const rootMenus = [];
-    
+
     const remainingMenus = [...allMenus];
     let indexOffset = 0;
     allMenus.forEach((menu, index) => {
@@ -20,10 +21,6 @@ class MenuStructureService {
     rootMenus.forEach(rootMenu => this.#populateChildrenMenus(remainingMenus, rootMenu));
 
     return rootMenus;
-  }
-
-  #getAllMenus() {
-    return Menu.find();
   }
 
   #populateChildrenMenus(menus, menuItem) {
@@ -42,16 +39,33 @@ class MenuStructureService {
   }
 
   async isCyclicMenu(menuSchema) {
-    const parentId = menuSchema.parent_menu_id;
-    if (!parentId) {
+    if (!menuSchema.id || !menuSchema.parent_menu_id) {
       return false;
     }
 
-    if (menuSchema.id === parentId) {
+    if (menuSchema.id === menuSchema.parent_menu_id) {
       return true;
     }
 
-    return false; // TODO
+    const allSubmenus = await this.#getAllSubmenus(menuSchema.id);
+    return allSubmenus.indexOf(menuSchema.parent_menu_id) !== -1;
+  }
+
+  async #getAllSubmenus(id) {
+    const submenuIds = await this.#getSubmenus(id);
+
+    let submenusSubmenusIds = await Promise.all(
+      submenuIds.map(submenuId => this.#getAllSubmenus(submenuId))
+    );
+    submenusSubmenusIds = submenusSubmenusIds
+      .reduce((accumulator, current) => accumulator.concat(current), []);
+
+    return submenuIds.concat(submenusSubmenusIds);
+  }
+
+  async #getSubmenus(id) {
+    return (await this.#menuRepository.findChildrenByParentId(id))
+      .map(objectId => objectId.toString());
   }
 
 }
